@@ -24,8 +24,9 @@ input_int = int(input("""Введите числа из списка ниже, �
 print(9 - num_list[::-1].index(input_int))
 """
 Ещё варинат, без привязки к количеству элементов в списке
-print(len(num_list) - num_list[::-1].index(input_int)"""
-
+print(len(num_list) - num_list[::-1].index(input_int)
+print(len(num_list) - num_list[::-1].index(100)-1
+"""
 input_str = input("""Введите слово из списка ниже, чтобы узнать индекс последнего вхождения элемента
 ['python', 'ruby', 'perl', 'ruby', 'perl', 'python', 'ruby', 'perl']:""")
 print(7 - word_list[::-1].index(input_str))
