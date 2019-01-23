@@ -41,3 +41,15 @@ while not status:
         status = True
         continue
     ip = input('Введите IP-адрес ещё раз: ')
+
+"""
+11:33 $ ./6.1b.py
+Введите IP-адрес(например 10.0.1.1): sdfsdfsdfsdfsdf
+Incorrect IPv4 address, add 3 dots between
+Введите IP-адрес ещё раз: sdfsdfsdf...
+Incorrect IPv4 address, ip must be a number
+Введите IP-адрес ещё раз: 234234.23434.624.2324
+Incorrect IPv4 address, use only numbers in range 0-255
+Введите IP-адрес ещё раз: 192.168.1.1
+This is unicast IP
+"""

@@ -68,3 +68,19 @@ for intf, vlan in fast_int['trunk'].items():
                 print(' {} remove {}'.format(command, ','.join(vlan[1:])))
         else:
             print(' {}'.format(command))
+
+"""
+11:37 $ ./6.3.py 
+interface FastEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan add 10,20
+interface FastEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 11,30
+interface FastEthernet0/4
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan remove 17
+"""

@@ -55,3 +55,24 @@ else:
                 print('This is unassigned IP')
             else:
                 print('This is unused IP')
+
+"""
+11:31 $ ./6.1a.py 
+Введите IP-адрес(например 10.0.1.1): fsdkfhsdiufhsdiufh
+Incorrect IPv4 address, add 3 dots between
+11:31 $ ./6.1a.py 
+Введите IP-адрес(например 10.0.1.1): sdfsdf.sdfsdfsdfsd.df.sdfsdf
+Incorrect IPv4 address, use only numbers
+11:32 $ ./6.1a.py 
+Введите IP-адрес(например 10.0.1.1): sdfsdfsdfsdfsdf...
+Incorrect IPv4 address, use only numbers
+11:32 $ ./6.1a.py 
+Введите IP-адрес(например 10.0.1.1): 234234234.234.235236236.234.1
+Incorrect IPv4 address, add 3 dots between
+11:33 $ ./6.1a.py 
+Введите IP-адрес(например 10.0.1.1): 300.5000.6234235.15
+Incorrect IPv4 address, allowed only 0-255 range
+11:33 $ ./6.1a.py 
+Введите IP-адрес(например 10.0.1.1): 192.168.1.1
+This is unicast IP
+"""
