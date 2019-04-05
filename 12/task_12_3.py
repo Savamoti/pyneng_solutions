@@ -19,73 +19,35 @@ Reachable    Unreachable
 Функция не должна изменять списки, которые передавны ей как аргументы. То есть, до выполнения функции и после списки должны выглядеть одинаково.
 
 """
-import subprocess
-import argparse
-from task_12_1 import check_ip_addresses
-import ipaddress
 from tabulate import tabulate
 
-def count_integer(a, b):
+#create two lists
+yes = ['192.168.1.{}'.format(i) for i in range(1,10)]
+no = ['192.168.9.{}'.format(i) for i in range(1,5)]
+def ip_table(list1, list2):
     """
-    This function counts the number of objects between variables a and b.
+    The function requires two lists, and print them with tabulate
     """
-    x = 0
-    status = True
-    while status:
-        if a == b:
-            x = x + 1
-            status = False
-        else:
-            a = a + 1
-            x = x + 1
-    return x
+    q = {'Available': [], 'Unavailable': []}
+    for i in yes:
+        q['Available'].append(i)
+    for i in no:
+        q['Unavailable'].append(i)
+    print(tabulate(q, headers='keys'))
 
-def print_with_tabulate(yes, no):
-    """
-    Function requires two list, print them with tabulate.
-    """
-    dic = {}
-    dic['Reachable'] = yes
-    dic['Unreachable'] = no
-    print(tabulate(dic, headers = 'keys'))
+ip_table(yes, no)
 
-if __name__ == "__main__":
-    #parser
-    parser = argparse.ArgumentParser(description='Ping script')
-    parser.add_argument('ip_list', action='store', help='Enter ip-address-list just like: 192.168.1.1-10 or 192.168.1.1-192.168.1.10 or 192.168.1.1')
-    args = parser.parse_args()
-    yes = []
-    no = []
-    columns = ['Reachable', 'Unreachable']
-    if '-' in args.ip_list:
-        lists1, lists2 = args.ip_list.split('-')
-        lis1 = int(lists1.split('.')[-1])
-        lis2 = int(lists2.split('.')[-1])
-        start = ipaddress.ip_address(lists1)
-        x = count_integer(lis1, lis2)
-        for line in range(x):
-            status = check_ip_addresses(start)
-            if status:
-                yes.append(start)
-                start = start + 1
-            else:
-                no.append(start)
-                start = start + 1
-    else:
-        status = check_ip_addresses(args.ip_list)
-        start = ipaddress.ip_address(args.ip_list)
-        if status:
-            yes.append(start)
-        else:
-            no.append(start)
-    print_with_tabulate(yes, no)
 """
-17:58 $ ./task_12_3.py 192.168.1.1-3
-I'm ping 192.168.1.1 right now, wait.
-I'm ping 192.168.1.2 right now, wait.
-I'm ping 192.168.1.3 right now, wait.
-Reachable    Unreachable
+22:23 $ ./task_12_3.py
+Available    Unavailable
 -----------  -------------
-192.168.1.1  192.168.1.2
-             192.168.1.3
+192.168.1.1  192.168.9.1
+192.168.1.2  192.168.9.2
+192.168.1.3  192.168.9.3
+192.168.1.4  192.168.9.4
+192.168.1.5
+192.168.1.6
+192.168.1.7
+192.168.1.8
+192.168.1.9
 """

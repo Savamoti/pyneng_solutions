@@ -8,44 +8,50 @@
 Для проверки доступности IP-адреса, используйте ping. Адрес считается доступным, если на три ICMP-запроса пришли три ответа.
 """
 import subprocess
-import argparse
+import multiprocessing
+from multiprocessing import Process
 
-def check_ip_addresses(ip):
+def check_ip_addresse(ip, queues):
     """
-    Ping IP and return status (True == returncoode 0 or False == returncode 1)
+    Function requires IP and class Queue. Ping IP and put result in queues object.
     """
-    print("I'm ping {} right now, wait.".format(ip))
-    status = subprocess.run('ping -c 3 {}'.format(ip), shell=True, stdout=subprocess.DEVNULL)
-    if status.returncode == 0:
-        return True
+    command = subprocess.run('ping -c 3 {}'.format(ip), shell=True, stdout=subprocess.DEVNULL)
+    if command.returncode == 0:
+        print('Yeah,', ip, 'is alive.')
+        status = True
     else:
-        return False
+        print('Oh noo,', ip, 'is dead.')
+        status = False
+    queues.put((status, ip))
+def ping_ip_list(ip_list):
+    """
+    Function requires list of strings like IP.
+    """
+    queues = multiprocessing.Queue()
+    procs = []
+    result = {True:[], False:[]}
 
-if __name__ == "__main__":
+    for ip in ip_list:
+        p = Process(target=check_ip_addresse, args=(ip, queues))
+        procs.append(p)
+        p.start()
 
-    parser = argparse.ArgumentParser(description='Ping script')
+    for p in procs:
+        p.join()
 
-    parser.add_argument('spisok', action='store', help='Put there name of ip list file')
-    args = parser.parse_args()
-    yes = []
-    no = []
-    with open(args.spisok) as file:
-        for line in file:
-            line = line.strip()
-            if check_ip_addresses(line) == True:
-                yes.append(line)
-            else:
-                no.append(line)
-    print('Available address list: ',yes)
-    print('Unavailable address list: ', no)
+    for p in procs:
+        key, value = queues.get()
+        result[key].append(value)
+    return result
+if __name__ == '__main__':
+    ip_lists = ['192.168.1.1', '192.168.1.100', '8.8.8.8', '1.1.1.1']
+    print(ping_ip_list(ip_lists))
+
 """
-17:54 $ ./task_12_1.py ip-list.txt 
-I'm ping 8.8.8.8 right now, wait.
-I'm ping 192.168.1.190 right now, wait.
-I'm ping 8.8.4.4 right now, wait.
-I'm ping 1.1.1.1 right now, wait.
-I'm ping 192.168.1.191 right now, wait.
-I'm ping 192.168.1.192 right now, wait.
-Available address list:  ['8.8.8.8', '8.8.4.4', '1.1.1.1']
-Unavailable address list:  ['192.168.1.190', '192.168.1.191', '192.168.1.192']
-"""
+21:31 $ ./task_12_1.py
+Yeah, 192.168.1.1 is alive.
+Yeah, 8.8.8.8 is alive.
+Yeah, 1.1.1.1 is alive.
+Oh noo, 192.168.1.100 is dead.
+{True: ['192.168.1.1', '8.8.8.8', '1.1.1.1'], False: ['192.168.1.100']}
+ """

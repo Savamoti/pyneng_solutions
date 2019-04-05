@@ -17,8 +17,11 @@ IP-адреса могут быть в формате:
 """
 import subprocess
 import argparse
-from task_12_1 import check_ip_addresses
-import ipaddress
+import multiprocessing
+from multiprocessing import Process
+from task_12_1 import check_ip_addresse
+from task_12_1 import ping_ip_list
+
 
 def count_integer(a, b):
     """
@@ -36,41 +39,58 @@ def count_integer(a, b):
     return x
 
 if __name__ == "__main__":
-    #parser
-    parser = argparse.ArgumentParser(description='Ping script')
-    parser.add_argument('ip_list', action='store', help='Enter ip-address-list just like: 192.168.1.1-10 or 192.168.1.1-192.168.1.10 or 192.168.1.1')
-    args = parser.parse_args()
-    yes = []
-    no = []
 
-    if '-' in args.ip_list:
-        lists1, lists2 = args.ip_list.split('-')
-        lis1 = int(lists1.split('.')[-1])
-        lis2 = int(lists2.split('.')[-1])
-        start = ipaddress.ip_address(lists1)
-        x = count_integer(lis1, lis2)
-        for line in range(x):
-            status = check_ip_addresses(start)
-            if status:
-                yes.append(start)
-                start = start + 1
-            else:
-                no.append(start)
-                start = start + 1
+    parser = argparse.ArgumentParser(description='Ping script')
+    parser.add_argument('ip', action='store', help='Enter ip-address-list just like: 192.168.1.1-10 or 192.168.1.1-192.168.1.10 or 192.168.1.1')
+    args = parser.parse_args()
+
+    ip_list = []
+    if '-' in args.ip:
+        ip_str, ip_str2 = args.ip.split('-')
+        last_oktet = int(ip_str.split('.')[-1])
+        last_oktet2 = int(ip_str2.split('.')[-1])
+        x = count_integer(last_oktet, last_oktet2)
+        ip_str = ip_str.split('.')
+        ip_int = [int(i) for i in ip_str]
+
+        for i in range(x):
+            ip_str = [str(i) for i in ip_int]
+            ip_str = '.'.join(ip_str)
+            ip_list.append(ip_str)
+            ip_int[-1] = ip_int[-1] + 1
+
+        print(ping_ip_list(ip_list))
     else:
-        status = check_ip_addresses(args.ip_list)
-        start = ipaddress.ip_address(args.ip_list)
-        if status:
-            yes.append(start)
+        result = {True: [], False: []}
+        command = subprocess.run('ping -c 3 {}'.format(args.ip), shell=True, stdout=subprocess.DEVNULL)
+        if command.returncode == 0:
+            print('Yeah,', args.ip, 'is alive')
+            result[True].append()
         else:
-            no.append(start)
-    print('Available address list: ',yes)
-    print('Unavailable address list: ', no)
+            print('Oh noo,'. args.ip, 'is dead')
+
 """
-17:56 $ ./task_12_2.py 192.168.1.1-3
-I'm ping 192.168.1.1 right now, wait.
-I'm ping 192.168.1.2 right now, wait.
-I'm ping 192.168.1.3 right now, wait.
-Available address list:  [IPv4Address('192.168.1.1')]
-Unavailable address list:  [IPv4Address('192.168.1.2'), IPv4Address('192.168.1.3')]
-"""
+21:53 $ ./task_12_2.py 192.168.1.100-120
+Yeah, 192.168.1.101 is alive.
+Yeah, 192.168.1.105 is alive.
+Oh noo, 192.168.1.102 is dead.
+Oh noo, 192.168.1.100 is dead.
+Oh noo, 192.168.1.104 is dead.
+Oh noo, 192.168.1.108 is dead.
+Oh noo, 192.168.1.107 is dead.
+Oh noo, 192.168.1.106 is dead.
+Oh noo, 192.168.1.103 is dead.
+Oh noo, 192.168.1.109 is dead.
+Oh noo, 192.168.1.114 is dead.
+Oh noo, 192.168.1.110 is dead.
+Oh noo, 192.168.1.111 is dead.
+Oh noo, 192.168.1.112 is dead.
+Oh noo, 192.168.1.113 is dead.
+Oh noo, 192.168.1.115 is dead.
+Oh noo, 192.168.1.118 is dead.
+Oh noo, 192.168.1.120 is dead.
+Oh noo, 192.168.1.116 is dead.
+Oh noo, 192.168.1.117 is dead.
+Oh noo, 192.168.1.119 is dead.
+{True: ['192.168.1.101', '192.168.1.105'], False: ['192.168.1.102', '192.168.1.109', '192.168.1.104', '192.168.1.108', '192.168.1.106', '192.168.1.107', '192.168.1.103', '192.168.1.100', '192.168.1.112', '192.168.1.113', '192.168.1.114', '192.168.1.110', '192.168.1.111', '192.168.1.117', '192.168.1.118', '192.168.1.119', '192.168.1.116', '192.168.1.115', '192.168.1.120']}
+ """
